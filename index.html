@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Aurelle — Atelier Botanique</title>
+  <meta name="description" content="Aurelle is a slow floristry atelier. Seasonal stems, cut at first light and placed by hand.">
+  <meta name="theme-color" content="#F2EDE3">
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet">
+  <link rel="preload" as="font" href="assets/fonts/Krylon-Regular.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" href="assets/freesia.webp" type="image/webp">
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.replace('no-js', 'js')</script>
+</head>
+<body>
+
+  <header class="nav">
+    <a class="logo" href="#top" aria-label="Aurelle, home">
+      <span class="logo-word">Aurelle</span>
+      <span class="logo-sub">Atelier Botanique</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#">Arrangements</a>
+      <a href="#">Subscriptions</a>
+      <a href="#">Atelier</a>
+      <a href="#">Journal</a>
+    </nav>
+    <div class="nav-end">
+      <span class="nav-count" aria-hidden="true"><b data-chapter-num>01</b> / 05</span>
+      <a href="#">Bag (0)</a>
+    </div>
+  </header>
+
+  <ol class="rail" aria-hidden="true">
+    <li class="is-active"><span>01</span><em>The stem</em></li>
+    <li><span>02</span><em>First light</em></li>
+    <li><span>03</span><em>The hand</em></li>
+    <li><span>04</span><em>The vessel</em></li>
+    <li><span>05</span><em>The room</em></li>
+  </ol>
+
+  <main id="top">
+    <section class="film" id="film">
+      <div class="stage" id="stage">
+
+        <div class="curtain" id="curtain"></div>
+
+        <!-- 01 · The stem -->
+        <h1 class="hero-title">
+          <span class="hl hl1" data-split>Slow</span>
+          <span class="hl hl2" data-split><em>flowers,</em></span>
+          <span class="sr-only">cut at first light and placed by hand.</span>
+        </h1>
+        <div class="hero-meta">
+          <p class="hero-copy">Seasonal arrangements, cut at first light and placed by hand in our Lisbon atelier.</p>
+          <p class="hero-cue">Scroll <span class="cue-line"></span> follow the stem</p>
+        </div>
+        <div class="tag" id="tag" aria-hidden="true">
+          <span class="tag-line"></span>
+          <span class="tag-text"><b>Nº 07</b> Freesia ‘Aurea’<br>Spring ’26</span>
+        </div>
+
+        <div class="giant" id="giant" aria-hidden="true"><em>Aurea</em></div>
+
+        <!-- The world: everything physical lives here, under one camera -->
+        <div class="world" id="world">
+          <div class="sibs" id="sibs" aria-hidden="true"></div>
+          <div class="vase-part" id="vaseBack"></div>
+          <div class="flower" id="flower">
+            <div class="flower-inner">
+              <img src="assets/freesia.webp" alt="A single yellow freesia stem" decoding="async" id="flowerImg">
+            </div>
+          </div>
+          <div class="vase-part" id="vaseFront"></div>
+        </div>
+
+        <!-- 02 · First light -->
+        <div class="scene s1">
+          <div class="block" id="s1">
+            <p class="label">02 — First light</p>
+            <h2 class="display" data-split>Cut before the dew lifts.</h2>
+            <p class="body">Our growers harvest at dawn, when stems are heavy with water and every bloom still keeps the cool of the night.</p>
+          </div>
+        </div>
+
+        <!-- 03 · The hand -->
+        <div class="scene s2 on-dark">
+          <div class="block" id="s2">
+            <p class="label">03 — The hand</p>
+            <h2 class="display" data-split>Placed by hand, <em>never by rule.</em></h2>
+            <p class="body">Each stem is turned in the light until it finds the angle it wants to grow toward. Then we leave it be.</p>
+          </div>
+        </div>
+
+        <!-- 04 · The vessel -->
+        <div class="scene s3 on-dark">
+          <p class="label vessel-label" id="vesselLabel">04 — The vessel <span>Bud vase Nº 3, hand-thrown stoneware</span></p>
+        </div>
+
+        <div class="scene s4 on-dark">
+          <div class="info-name" id="infoName">
+            <p class="label">Nº 07 — In season now</p>
+            <h2 class="name" data-split><em>Freesia ‘Aurea’</em></h2>
+            <p class="latin">Freesia × hybrida · Iridaceae</p>
+            <p class="body">A honeyed, peppery scent that opens bloom by bloom, from the lowest bud upward.</p>
+          </div>
+          <dl class="specs" id="specs">
+            <div><dt>Season</dt><dd>February — May</dd></div>
+            <div><dt>Grown</dt><dd>Westland, under glass</dd></div>
+            <div><dt>Vase life</dt><dd>10 to 14 days</dd></div>
+            <div><dt>Scent</dt><dd>Honey, white pepper</dd></div>
+            <div><dt>Vessel</dt><dd>Bud vase Nº 3, bone glaze</dd></div>
+          </dl>
+          <p class="philo" id="philo">“One stem, well placed, changes the temperature of a room.”</p>
+        </div>
+
+        <!-- 05 · The room -->
+        <div class="ground" id="ground"></div>
+        <div class="captions" id="captions" aria-hidden="true"></div>
+        <div class="scene s5 on-dark">
+          <h2 class="display s5-title" id="s5title" data-split>A season, <em>arranged.</em></h2>
+          <div class="s5-side" id="s5side">
+            <p class="body">The Spring Installation. Seven vessels, five freesias, one window of morning light. Delivered weekly from March.</p>
+            <a class="cta" href="#">Reserve an arrangement <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="closing-grid">
+        <h2 class="closing-title">Come and watch<br><em>the light change.</em></h2>
+        <div class="closing-cols">
+          <div>
+            <p class="label">Visit</p>
+            <p>Rua das Flores 27<br>1200-193 Lisboa</p>
+          </div>
+          <div>
+            <p class="label">Hours</p>
+            <p>Tuesday — Saturday<br>8:00 — 14:00</p>
+          </div>
+          <div>
+            <p class="label">Follow</p>
+            <p><a href="#">Instagram</a><br><a href="#">The Journal</a></p>
+          </div>
+        </div>
+      </div>
+      <p class="wordmark" aria-hidden="true">Aurelle<span class="dot"></span></p>
+      <div class="foot">
+        <span>© 2026 Aurelle Atelier Botanique</span>
+        <span>Grown slowly. Given gladly.</span>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.3.4/dist/lenis.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
