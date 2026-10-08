@@ -11,11 +11,13 @@
   const ENABLED = true;
   const STRENGTH = 1;         // overall visibility: 0.5 = fainter, 1.5 = stronger
 
-  if (!ENABLED || /[?&]pollen=off\b/.test(location.search)) return;
-  if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;   // no cursor, no effect
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const off = why => { console.info(`[pollen] off: ${why}`); };
+  if (!ENABLED) return off('ENABLED = false');
+  if (/[?&]pollen=off\b/.test(location.search)) return off('?pollen=off');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return off('system setting "Reduce motion" is on');
   const stage = document.getElementById('stage');
-  if (!stage) return;
+  if (!stage) return off('no #stage');
+  console.info('[pollen] on: move the cursor (or drag a finger) across the empty background');
 
   /* ── Tuning ─────────────────────────────────────────── */
   const CELL = 15;            // one fibre per cell, jittered: fine, even, never a grid
@@ -111,14 +113,17 @@
   let mx = 0, my = 0, px = 0, py = 0, inside = false, primed = false, stageTop = 0;
   const readTop = () => { stageTop = stage.getBoundingClientRect().top; };
   addEventListener('scroll', readTop, { passive: true });
-  addEventListener('pointermove', e => {
-    if (e.pointerType !== 'mouse') return;
-    mx = e.clientX; my = e.clientY - stageTop;
+  const move = (x, y) => {
+    mx = x; my = y - stageTop;
     if (!primed) { px = mx; py = my; primed = true; }
     inside = true;
     wake();
-  }, { passive: true });
-  document.addEventListener('mouseleave', () => { inside = false; primed = false; });
+  };
+  // Mouse, trackpad and pen. Touch is handled below, since a scrolling finger cancels pointer events.
+  addEventListener('pointermove', e => { if (e.pointerType !== 'touch') move(e.clientX, e.clientY); }, { passive: true });
+  addEventListener('touchmove', e => { const t = e.touches[0]; if (t) move(t.clientX, t.clientY); }, { passive: true });
+  addEventListener('touchend', () => { inside = false; primed = false; }, { passive: true });
+  document.documentElement.addEventListener('mouseleave', () => { inside = false; primed = false; });
   addEventListener('blur', () => { inside = false; primed = false; });
 
   function disturb(x, y, mvx, mvy, speed, now) {
