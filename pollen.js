@@ -9,6 +9,7 @@
  */
 (() => {
   const ENABLED = true;
+  const STRENGTH = 1;         // overall visibility: 0.5 = fainter, 1.5 = stronger
 
   if (!ENABLED || /[?&]pollen=off\b/.test(location.search)) return;
   if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;   // no cursor, no effect
@@ -17,14 +18,14 @@
   if (!stage) return;
 
   /* ── Tuning ─────────────────────────────────────────── */
-  const CELL = 17;            // one fibre per cell, jittered: fine, even, never a grid
-  const RADIUS = 105;         // how far the disturbance reaches
+  const CELL = 15;            // one fibre per cell, jittered: fine, even, never a grid
+  const RADIUS = 130;         // how far the disturbance reaches
   const RETURN = 0.016;       // spring back to rest
   const DAMP = 0.885;         // inertia
-  const FADE = 0.968;         // how quickly a disturbed fibre goes quiet again
-  const MAX_ALPHA = { light: 0.3, dark: 0.26 };
+  const FADE = 0.978;         // how quickly a disturbed fibre goes quiet again
+  const MAX_ALPHA = { light: 0.62, dark: 0.5 };
   const TONES = {
-    light: ['#9A926A', '#BFA45A'],   // muted olive, faded pollen
+    light: ['#7F7A52', '#B39433'],   // muted olive, faded pollen
     dark:  ['#D2CBB3', '#A3AE90'],   // pale cream, sage
   };
 
@@ -55,7 +56,7 @@
       bx[i] = (c + Math.random()) * CELL;
       by[i] = (r + Math.random()) * CELL;
       ang[i] = Math.random() * Math.PI;
-      len[i] = Math.random() < 0.7 ? 1.4 + Math.random() * 2.6 : 0;   // fibres, and a few specks
+      len[i] = Math.random() < 0.75 ? 2.5 + Math.random() * 4 : 0;   // fibres, and a few specks
       tone[i] = Math.random() < 0.72 ? 0 : 1;
     }
     active = [];
@@ -64,10 +65,10 @@
 
   /* ── The film's mood: how much atmosphere each chapter allows ── */
   const MOOD = [            // [film time, intensity]
-    [0, 0.45], [1.2, 0.45], // hero: most restrained
-    [1.6, 0.6], [2.6, 0.6], // first light
+    [0, 0.7], [1.2, 0.7],   // hero: most restrained
+    [1.6, 0.8], [2.6, 0.8], // first light
     [3.3, 1], [4.5, 1],     // the dark atelier
-    [5.0, 0.3], [8.3, 0.3], // the vessel: stay out of the way
+    [5.0, 0.45], [8.3, 0.45], // the vessel: stay out of the way
     [9.2, 0.9], [11, 0.9],  // the room: the world is richer now
   ];
   const film = () => window.aurelle && window.aurelle.tl;
@@ -121,7 +122,7 @@
   addEventListener('blur', () => { inside = false; primed = false; });
 
   function disturb(x, y, mvx, mvy, speed, now) {
-    const strength = Math.min(speed, 36) / 36;
+    const strength = Math.min(1, 0.35 + speed / 30);
     const boost = 1 + 0.6 * nearFlower(x, y, now);
     const c0 = Math.max(0, Math.floor((x - RADIUS) / CELL)), c1 = Math.min(cols - 1, Math.floor((x + RADIUS) / CELL));
     const r0 = Math.max(0, Math.floor((y - RADIUS) / CELL)), r1 = Math.min(rows - 1, Math.floor((y + RADIUS) / CELL));
@@ -135,7 +136,7 @@
       const inv = 1 / (d || 1);
       vx[i] += (ex * inv * 1.1 + ux * 0.7) * f;   // brushed aside, and a little along the stroke
       vy[i] += (ey * inv * 1.1 + uy * 0.7) * f;
-      en[i] = Math.min(1, en[i] + f * 0.3 * boost);
+      en[i] = Math.min(1, en[i] + f * 0.6 * boost);
       if (!isActive[i]) { isActive[i] = 1; active.push(i); }
     }
   }
@@ -154,7 +155,7 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     ctx.lineCap = 'round';
-    ctx.lineWidth = 0.8;
+    ctx.lineWidth = 1.1;
 
     const next = [];
     for (let n = 0; n < active.length; n++) {
@@ -170,7 +171,7 @@
       next.push(i);
       const x = bx[i] + dx[i], y = by[i] + dy[i];
       const theme = y > edge ? 'dark' : 'light';
-      const a = en[i] * MAX_ALPHA[theme] * k;
+      const a = Math.min(1, en[i] * MAX_ALPHA[theme] * k * STRENGTH);
       if (a < 0.004) continue;
       ctx.globalAlpha = a;
       const col = TONES[theme][tone[i]];
@@ -180,7 +181,7 @@
         ctx.beginPath(); ctx.moveTo(x - hx, y - hy); ctx.lineTo(x + hx, y + hy); ctx.stroke();
       } else {
         ctx.fillStyle = col;
-        ctx.fillRect(x - 0.55, y - 0.55, 1.1, 1.1);
+        ctx.fillRect(x - 0.8, y - 0.8, 1.6, 1.6);
       }
     }
     active = next;
