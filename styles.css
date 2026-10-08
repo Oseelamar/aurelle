@@ -91,6 +91,9 @@ html.lenis, html.lenis body { height: auto; }
 .curtain { position: absolute; inset: 0; background: var(--moss); z-index: 1; visibility: hidden; will-change: transform; }
 
 .world { position: absolute; inset: 0; z-index: 3; will-change: transform; }
+.world img { -webkit-user-drag: none; user-select: none; }
+.stage { -webkit-user-select: none; user-select: none; }
+.stage .scene { -webkit-user-select: text; user-select: text; }
 .flower, .vase-part, .sib { position: absolute; left: 0; top: 0; will-change: transform; }
 .flower img, .stem img { width: 100%; height: 100%; }
 .flower-inner { width: 100%; height: 100%; }
@@ -174,6 +177,7 @@ html.lenis, html.lenis body { height: auto; }
 .s5-title { position: absolute; left: calc(var(--g) + 11vw); top: 13vh; font-size: clamp(40px, 5.2vw, 100px); }
 .s5-side { position: absolute; right: var(--g); top: 14vh; width: min(25vw, 360px); }
 .s5-side .body { margin-top: 0; }
+.reel { display: none; }
 .cta {
   display: inline-flex; align-items: center; gap: 12px; margin-top: 26px;
   padding: 13px 20px 13px 18px; border-radius: 99px; border: 1px solid rgba(236, 228, 210, .3);
@@ -234,9 +238,19 @@ html.lenis, html.lenis body { height: auto; }
   .philo { display: none; }
 
   .s5-title { left: var(--g); top: 11vh; font-size: 11vw; }
-  .s5-side { left: var(--g); right: var(--g); top: calc(11vh + 26vw); width: auto; }
-  .s5-side .body { display: none; }
-  .cta { margin-top: 0; }
+  .s5-side { left: var(--g); right: var(--g); top: calc(11vh + 15vw); width: auto; }
+  .s5-side .body { max-width: 36ch; }
+  .cta { margin-top: 18px; }
+  .stage { touch-action: pan-y; }
+  .reel {
+    position: absolute; left: 0; right: 0; top: calc(90% + 16px); z-index: 4;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    color: var(--cream); opacity: 0; pointer-events: none;
+  }
+  .reel-name { font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; font-weight: 500; }
+  .reel-dots { display: flex; gap: 7px; }
+  .reel-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: .28; transition: opacity .3s, background .3s; }
+  .reel-dots i.on { opacity: 1; background: var(--yolk); }
   .captions { display: none; }
 
   .closing { padding-top: 16vh; }

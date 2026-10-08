@@ -124,7 +124,7 @@
   /* ── The installation around her ───────────────────── */
   const SIBS = [
     { side: -1, rank: 1, vase: 'bottle', color: '#2C2D27', vh: .31, label: 'Apricot', stems: [{ img: 'apricot', h: 1.5, lean: -3 }] },
-    { side: 1,  rank: 1, vase: 'amph',   color: '#C29A45', vh: .26, label: 'Blush', stems: [{ img: 'blush', h: 2.1, lean: -12, flip: true }, { img: 'blush', h: 1.9, lean: 9 }] },
+    { side: 1,  rank: 1, vase: 'amph',   color: '#C29A45', vh: .26, label: 'Blush', stems: [{ img: 'blush', h: 2.0, lean: -2, flip: true }, { img: 'blush', h: 1.9, lean: 9 }] },
     { side: -1, rank: 2, vase: 'bowl',   color: '#8D9B7D', vh: .18, label: 'Lemon & Ivory', stems: [{ img: 'lemon', h: 2.6, lean: -20, flip: true }, { img: 'ivory', h: 3.0, lean: -2, flip: true }, { img: 'lemon', h: 2.4, lean: 17 }] },
     { side: 1,  rank: 2, vase: 'slim',   color: '#E9E2D3', vh: .35, label: 'Lemon', stems: [{ img: 'lemon', h: 1.35, lean: 4 }] },
     { side: -1, rank: 3, vase: 'cyl',    color: '#DCD3BF', vh: .28, label: 'Ivory', stems: [{ img: 'ivory', h: 1.85, lean: -7, flip: true }] },
@@ -145,6 +145,22 @@
     captionsEl.appendChild(cap);
     return { ...s, el, v, cap, svgs: $$('svg', el), stemEls: $$('.stem', el) };
   });
+  // She has a name too.
+  const centreCap = document.createElement('span');
+  centreCap.innerHTML = '<b>●</b>Aurea';
+  captionsEl.appendChild(centreCap);
+
+  // Mobile: the room becomes a row you swipe through, one vessel at a time.
+  const REEL = [
+    ...sibNodes.filter(s => s.side < 0).sort((a, b) => b.rank - a.rank).map(s => ({ label: s.label, slot: -s.rank })),
+    { label: 'Aurea', slot: 0 },
+    ...sibNodes.filter(s => s.side > 0).sort((a, b) => a.rank - b.rank).map(s => ({ label: s.label, slot: s.rank })),
+  ];
+  const reel = document.createElement('div');
+  reel.className = 'reel';
+  reel.innerHTML = `<span class="reel-name" aria-live="polite">Aurea</span><span class="reel-dots">${REEL.map(() => '<i></i>').join('')}</span>`;
+  stage.appendChild(reel);
+  const reelName = $('.reel-name', reel), reelDots = $$('.reel-dots i', reel);
 
   /* ── Layout: every spatial decision lives here ─────── */
   let L = {};
@@ -195,9 +211,10 @@
     ground.style.top = `${vy}px`;
 
     // Siblings: offsets are what you see after the camera pulls back.
-    const offs = mobile ? [0, .2, .355, 9] : [0, .135, .25, .355];
+    const offs = mobile ? [0, .52, 1.04, 1.56] : [0, .135, .25, .355];
+    L.slot = mobile ? .52 * w : 0;
     sibNodes.forEach(s => {
-      const hidden = offs[s.rank] > 1;
+      const hidden = false;
       s.el.style.display = hidden ? 'none' : '';
       s.cap.style.display = hidden ? 'none' : '';
       s.hidden = hidden;
@@ -223,6 +240,9 @@
       s.cap.style.left = `${vx + s.side * offs[s.rank] * w}px`;
       s.cap.style.top = `${vy + 18}px`;
     });
+    centreCap.style.left = `${vx}px`;
+    centreCap.style.top = `${vy + 18}px`;
+    if (!mobile) { reelState.pan = 0; setReel(0, false); }
 
     // The specimen tag points at the top bloom in the opening frame.
     const hp = P.hero;
@@ -292,7 +312,12 @@
     let cam = 1;
     cam = lerp(cam, 1.03, E.ioS(seg(t, 6.5, 7.4)));
     cam = lerp(cam, L.cam, E.io3(seg(t, 8.5, 9.9)));
-    world.style.transform = `scale(${cam})`;
+    // On mobile, once the room is assembled, the row can be swiped.
+    const g = L.mobile ? E.ioS(seg(t, 9.7, 10.15)) : 0;
+    if (g === 0 && reelState.pan !== 0 && !drag) { panTween && panTween.kill(); reelState.pan = 0; setReel(0, false); }
+    L.reelLive = g > 0.9;
+    reel.style.opacity = g;
+    world.style.transform = `translate3d(${reelState.pan * g}px,0,0) scale(${cam})`;
 
     // The room unfolds from behind her: inner pair first, outer pair last.
     sibNodes.forEach(s => {
@@ -383,6 +408,65 @@
   fadeIn('#s5side', 9.85);
   tl.fromTo($$('#captions span'), { autoAlpha: 0, y: 8 }, { autoAlpha: .7, y: 0, duration: .3, stagger: .04 }, 9.9);
   tl.set({}, {}, DUR);
+
+  /* ── Mobile reel: swipe with solid detents ─────────── */
+  const reelState = { pan: 0 };
+  let reelIndex = 0, drag = null, panTween = null;
+  function setReel(k, feel = true) {
+    k = clamp(k, -3, 3);
+    if (k === reelIndex) return;
+    reelIndex = k;
+    const item = REEL.find(r => r.slot === k);
+    reelName.textContent = item.label;
+    gsap.fromTo(reelName, { autoAlpha: .2, y: 4 }, { autoAlpha: 1, y: 0, duration: .35, ease: 'power2.out', overwrite: true });
+    reelDots.forEach((d, i) => d.classList.toggle('on', REEL[i].slot === k));
+    if (feel && navigator.vibrate) navigator.vibrate(6);
+  }
+  reelDots[3].classList.add('on');
+  function snapReel(k) {
+    k = clamp(k, -3, 3);
+    setReel(k);
+    panTween && panTween.kill();
+    panTween = gsap.to(reelState, { pan: -k * L.slot, duration: .7, ease: 'power3.out', onUpdate: () => direct(tl.time()) });
+  }
+  stage.addEventListener('pointerdown', e => {
+    if (!L.mobile || !L.reelLive) return;
+    drag = { start: reelIndex, id: e.pointerId, x: e.clientX, y: e.clientY, pan0: reelState.pan, axis: null, lx: e.clientX, lt: e.timeStamp, v: 0 };
+  });
+  stage.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.axis) {
+      if (Math.hypot(dx, dy) < 8) return;
+      drag.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+      if (drag.axis === 'x') { panTween && panTween.kill(); drag.pan0 = reelState.pan - dx; stage.setPointerCapture(e.pointerId); }
+    }
+    if (drag.axis !== 'x') return;
+    const lim = 3 * L.slot;
+    let p = drag.pan0 + dx;
+    if (p > lim) p = lim + (p - lim) * 0.25;            // soft resistance past the ends
+    if (p < -lim) p = -lim + (p + lim) * 0.25;
+    reelState.pan = p;
+    const dt = e.timeStamp - drag.lt;
+    if (dt > 0) drag.v = drag.v * 0.4 + ((e.clientX - drag.lx) / dt) * 0.6;
+    drag.lx = e.clientX; drag.lt = e.timeStamp;
+    setReel(Math.round(-p / L.slot));
+    direct(tl.time());
+  });
+  const endDrag = () => {
+    if (!drag) return;
+    if (drag.axis === 'x') {
+      // One vessel per swipe, unless the finger itself travelled further.
+      const passed = Math.round(-reelState.pan / L.slot);
+      let k = Math.round(-(reelState.pan + drag.v * 160) / L.slot);
+      const reach = Math.max(1, Math.abs(passed - drag.start));
+      k = clamp(k, drag.start - reach, drag.start + reach);
+      snapReel(k);
+    }
+    drag = null;
+  };
+  stage.addEventListener('pointerup', endDrag);
+  stage.addEventListener('pointercancel', endDrag);
 
   /* ── Chapters ──────────────────────────────────────── */
   const CHAPTERS = [0, 1.25, 3.2, 4.85, 8.6];
